@@ -1,43 +1,37 @@
 package ru.otus.hw.quiz.service;
 
-import ru.otus.hw.quiz.dao.QuestionDao;
-import ru.otus.hw.quiz.domain.Question;
-
-import java.util.Scanner;
+import ru.otus.hw.quiz.dao.AnswerDao;
+import ru.otus.hw.quiz.domain.Answer;
 
 public class QuestionServiceImp implements QuestionService{
 
-    private QuestionDao dao;
+    private AnswerDao dao;
+    private CommunicateService communicateService;
 
-    public QuestionServiceImp(QuestionDao doa) {
+    public QuestionServiceImp(AnswerDao doa, CommunicateService communicateService) {
         this.dao = doa;
+        this.communicateService = communicateService;
     }
 
     @Override
     public void executeQuiz() {
 
-        try (Scanner scan = new Scanner(System.in) ) {
-            for (Question question : dao.getQuestionList()) {
-                System.out.println("\n\n"+question.getQuestion() + "\n\n\n Варианты:\n");
+            for (Answer answer : dao.getAnswerList()) {
+                communicateService.putString("\n\n"+answer.getQuestion().getQuestion() + "\n\n\n Варианты:\n");
 
-                for (String answer : question.getAnswerList()) {
-                    System.out.println(answer);
+                for (String vanswer : answer.getQuestion().getAnswerList()) {
+                    communicateService.putString(vanswer);
                 }
-                System.out.println("\nВведите ответ: ");
-                question.checkAnswer(scan.next());
-                System.out.println("\n"+(question.getIsTrue() ? "Правильно" : "Неправильно"));
+                communicateService.putString("\nВведите ответ: ");
+                answer.checkAnswer(communicateService.getObject());
+                communicateService.putString("\n"+(answer.isCheckedResult() ? "Правильно" : "Неправильно"));
             }
 
-            Byte trueCnt=0;
-            Byte falseCnt=0;
-            for(Question question : dao.getQuestionList()) {
-                if (question.getIsTrue() )
-                    trueCnt++;
-                else
-                    falseCnt++ ;
-            }
-            System.out.println(String.format("\n\n Результат:\nправильных ответов - %d\nнеправильных ответов- %d", trueCnt, falseCnt));
-        }
+
+            int trueCnt=dao.getAnswerList().stream().mapToInt(s -> s.isCheckedResult()?1:0).sum();
+            int falseCnt=dao.getAnswerList().size()-trueCnt;
+
+        communicateService.putString(String.format("\n\n Результат:\nправильных ответов - %d\nнеправильных ответов- %d", trueCnt, falseCnt) );
 
     }
 }

@@ -1,5 +1,6 @@
 package ru.otus.hw.quiz.dao;
 
+import ru.otus.hw.quiz.domain.Answer;
 import ru.otus.hw.quiz.domain.Question;
 
 import java.io.*;
@@ -7,11 +8,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class QuestionDaoCsv implements QuestionDao{
+public class AnswerDaoCsv implements AnswerDao {
 
-    private List<Question> questionList = new ArrayList<Question>();
+    private List<Answer> answerList = new ArrayList<>();
 
-    public QuestionDaoCsv(String filename) throws IOException {
+    public AnswerDaoCsv(String filename) throws IOException {
 
 
         BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(filename)));
@@ -21,14 +22,14 @@ public class QuestionDaoCsv implements QuestionDao{
         while ((csvLine = br.readLine()) != null) {
             splitedCsvLine = csvLine.split(";");
             if (splitedCsvLine.length > 2) {
-                questionList.add(new Question(splitedCsvLine[0], splitedCsvLine[1], Arrays.asList(Arrays.copyOfRange(splitedCsvLine,2, splitedCsvLine.length))));
+                answerList.add(new Answer(new Question(splitedCsvLine[0], splitedCsvLine[1], Arrays.asList(Arrays.copyOfRange(splitedCsvLine,2, splitedCsvLine.length)))));
             }
         }
     }
 
 
     @Override
-    public List<Question> getQuestionList() {
-        return questionList;
+    public List<Answer> getAnswerList() {
+        return answerList;
     }
 }
