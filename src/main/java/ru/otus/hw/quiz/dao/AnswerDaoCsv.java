@@ -1,6 +1,7 @@
 package ru.otus.hw.quiz.dao;
 
-import org.springframework.stereotype.Repository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import ru.otus.hw.quiz.domain.Answer;
 import ru.otus.hw.quiz.domain.Question;
 
@@ -9,15 +10,25 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
 public class AnswerDaoCsv implements AnswerDao {
+
+    private  final String filename;
+
+    public AnswerDaoCsv(String filename) {
+        this.filename = filename;
+    }
 
     private List<Answer> answerList = new ArrayList<>();
 
-    public AnswerDaoCsv(String filename) throws IOException {
+    @Override
+    public List<Answer> getAnswerList() {
+        return answerList;
+    }
 
-
-        BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(filename)));
+    @Override
+    public void setLang(String lang)  throws IOException {
+        String locFilename = filename.replaceFirst("@LANG@", lang);
+        BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(locFilename)));
 
         String csvLine;
         String[] splitedCsvLine;
@@ -27,11 +38,5 @@ public class AnswerDaoCsv implements AnswerDao {
                 answerList.add(new Answer(new Question(splitedCsvLine[0], splitedCsvLine[1], Arrays.asList(Arrays.copyOfRange(splitedCsvLine,2, splitedCsvLine.length)))));
             }
         }
-    }
-
-
-    @Override
-    public List<Answer> getAnswerList() {
-        return answerList;
     }
 }
