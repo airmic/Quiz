@@ -1,9 +1,8 @@
 package ru.otus.hw.quiz.service;
 
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.context.MessageSource;
+import ru.otus.hw.quiz.domain.QuizLanguage;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -11,33 +10,13 @@ public class CommunicateServiceImp implements  CommunicateService{
 
     private Scanner scan;
 
-    private ReloadableResourceBundleMessageSource bundleMessageSource;
-    private Locale locale;
+    private MessageSource messageSource;
+    private QuizLanguage quizLanguage;
 
-    @PostConstruct
-    public void csInit() {
-        scan = new Scanner(System.in);
-        bundleMessageSource = new ReloadableResourceBundleMessageSource();
-        bundleMessageSource.setDefaultEncoding("UTF-8");
-        bundleMessageSource.setBasename("/i18n/quiestion_service");
-        locale = Locale.ENGLISH;
-    }
-
-    public void setLocale(String langStr) {
-        if( "RU".equals(langStr.toUpperCase()) )
-            locale = new Locale("ru");
-        else
-            locale = Locale.ENGLISH;
-    }
-
-    @Override
-    public String getLangname() {
-        return locale.toString();
-    }
-
-    @PreDestroy
-    public void csDestroy() {
-        scan.close();
+    public CommunicateServiceImp(MessageSource messageSource, Scanner scan, QuizLanguage quizLanguage) {
+        this.scan = scan;
+        this.messageSource = messageSource;
+        this.quizLanguage = quizLanguage;
     }
 
     @Override
@@ -47,7 +26,7 @@ public class CommunicateServiceImp implements  CommunicateService{
 
     @Override
     public void putI10nCode(String str, Object[] objs) {
-        System.out.println(bundleMessageSource.getMessage(str, objs, locale));
+        System.out.println(messageSource.getMessage(str, objs, quizLanguage.getLocale()));
     }
 
     @Override

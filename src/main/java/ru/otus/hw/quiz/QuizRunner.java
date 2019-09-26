@@ -11,10 +11,7 @@ public class QuizRunner {
     public static void main(String[] args) {
         ApplicationContext context = new AnnotationConfigApplicationContext(QuizRunner.class);
         QuestionService service = context.getBean(QuestionService.class);
-        CommunicateService communicateService = context.getBean(CommunicateService.class);
         service.executeQuiz();
-        communicateService.putEmptyLines(1);
-        communicateService.putI10nCode("quiz.finished");
     }
 
 
