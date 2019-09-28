@@ -1,7 +1,6 @@
 package ru.otus.hw.quiz.dao;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
+import ru.otus.hw.quiz.config.ConsoleContext;
 import ru.otus.hw.quiz.domain.Answer;
 import ru.otus.hw.quiz.domain.Question;
 
@@ -10,33 +9,48 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
 public class AnswerDaoCsv implements AnswerDao {
 
     private  final String filename;
+    private List<Answer> answerList;
+    private ConsoleContext consoleContext;
 
-    public AnswerDaoCsv(String filename) {
+    public AnswerDaoCsv(String filename, ConsoleContext consoleContext) {
         this.filename = filename;
+        this.consoleContext = consoleContext;
+        answerList = new ArrayList<>();
+
     }
 
-    private List<Answer> answerList = new ArrayList<>();
 
     @Override
     public List<Answer> getAnswerList() {
+        if( answerList.isEmpty() )
+            reloadQuiz();
         return answerList;
     }
 
-    @Override
-    public void setLang(String lang)  throws IOException {
-        String locFilename = filename.replaceFirst("@LANG@", lang);
-        BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(locFilename)));
 
-        String csvLine;
-        String[] splitedCsvLine;
-        while ((csvLine = br.readLine()) != null) {
-            splitedCsvLine = csvLine.split(";");
-            if (splitedCsvLine.length > 2) {
-                answerList.add(new Answer(new Question(splitedCsvLine[0], splitedCsvLine[1], Arrays.asList(Arrays.copyOfRange(splitedCsvLine,2, splitedCsvLine.length)))));
+    public void reloadQuiz() {
+
+        answerList.clear();
+
+        String locFilename = filename.replaceFirst("@LANG@", consoleContext.getLocale().getLanguage());
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(locFilename)))) {
+
+            String csvLine;
+            String[] splitedCsvLine;
+            while ((csvLine = br.readLine()) != null) {
+                splitedCsvLine = csvLine.split(";");
+                if (splitedCsvLine.length > 2) {
+                    answerList.add(new Answer(new Question(splitedCsvLine[0], splitedCsvLine[1], Arrays.asList(Arrays.copyOfRange(splitedCsvLine, 2, splitedCsvLine.length)))));
+                }
             }
+        } catch (IOException ex) {
+            throw new RuntimeException("Quiz file read error");
         }
     }
+
+
 }

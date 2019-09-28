@@ -5,10 +5,6 @@ import org.springframework.stereotype.Component;
 import ru.otus.hw.quiz.config.Consts;
 import ru.otus.hw.quiz.dao.AnswerDao;
 import ru.otus.hw.quiz.domain.Answer;
-import ru.otus.hw.quiz.domain.QuizLanguage;
-
-import java.io.IOException;
-import java.util.Locale;
 
 
 @Component
@@ -16,32 +12,24 @@ public class QuestionServiceImp implements QuestionService{
 
     private AnswerDao dao;
     private CommunicateService communicateService;
-    private QuizLanguage quizLanguage;
 
 
     @Autowired
-    public QuestionServiceImp(AnswerDao doa, CommunicateService communicateService, QuizLanguage quizLanguage) {
+    public QuestionServiceImp(AnswerDao doa, CommunicateService communicateService) {
         this.dao = doa;
         this.communicateService = communicateService;
-        this.quizLanguage = quizLanguage;
     }
 
     private void languageSelect() {
-        communicateService.putI10nCode(Consts.selectLanguage);
-        quizLanguage.setLocale( new Locale(communicateService.getObject()) );
-
-        try {
-            dao.setLang(quizLanguage.getLanguage());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        communicateService.putI10nCode(Consts.SELECT_LANGUAGE);
+        communicateService.inputLocale();
     }
 
     private void showQuestion(String question) {
         communicateService.putEmptyLines(1);
         communicateService.putString(question);
         communicateService.putEmptyLines(1);
-        communicateService.putI10nCode(Consts.inputOptions);
+        communicateService.putI10nCode(Consts.INPUT_OPTIONS);
     }
 
     private void showAnswerVariants(Answer answer) {
@@ -52,10 +40,10 @@ public class QuestionServiceImp implements QuestionService{
 
     private void inputAnswer(Answer answer) {
         communicateService.putEmptyLines(1);
-        communicateService.putI10nCode(Consts.inputAnswer);
+        communicateService.putI10nCode(Consts.INPUT_ANSWER);
         answer.checkAnswer(communicateService.getObject());
         communicateService.putEmptyLines(1);
-        communicateService.putI10nCode(answer.isCheckedResult() ? Consts.answerRight : Consts.answerWrong);
+        communicateService.putI10nCode(answer.isCheckedResult() ? Consts.ANSWER_RIGTH : Consts.ANSWER_WRONG);
     }
 
     private void executeLanguagedQuiz() {
@@ -72,14 +60,14 @@ public class QuestionServiceImp implements QuestionService{
         int falseCnt=dao.getAnswerList().size()-trueCnt;
 
         communicateService.putEmptyLines(2);
-        communicateService.putI10nCode(Consts.inputResult);
+        communicateService.putI10nCode(Consts.INPUT_RESULT);
         communicateService.putEmptyLines(1);
-        communicateService.putI10nCode(Consts.answerCntRight, new Object[] {trueCnt});
+        communicateService.putI10nCode(Consts.ANSWER_CNT_RIGHT, new Object[] {trueCnt});
         communicateService.putEmptyLines(1);
-        communicateService.putI10nCode(Consts.answerCntWrong, new Object[] {falseCnt});
+        communicateService.putI10nCode(Consts.ANSWER_CNT_WRONG, new Object[] {falseCnt});
 
         communicateService.putEmptyLines(1);
-        communicateService.putI10nCode(Consts.quizFinished);
+        communicateService.putI10nCode(Consts.QUIZ_FINISHED);
 
     }
 

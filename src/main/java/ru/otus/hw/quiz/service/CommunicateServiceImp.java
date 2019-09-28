@@ -1,22 +1,18 @@
 package ru.otus.hw.quiz.service;
 
 import org.springframework.context.MessageSource;
-import ru.otus.hw.quiz.domain.QuizLanguage;
+import ru.otus.hw.quiz.config.ConsoleContext;
 
 import java.util.Locale;
-import java.util.Scanner;
 
 public class CommunicateServiceImp implements  CommunicateService{
 
-    private Scanner scan;
+    private final ConsoleContext consoleContext;
+    private final MessageSource messageSource;
 
-    private MessageSource messageSource;
-    private QuizLanguage quizLanguage;
-
-    public CommunicateServiceImp(MessageSource messageSource, Scanner scan, QuizLanguage quizLanguage) {
-        this.scan = scan;
+    public CommunicateServiceImp(MessageSource messageSource, ConsoleContext consoleContext) {
+        this.consoleContext = consoleContext;
         this.messageSource = messageSource;
-        this.quizLanguage = quizLanguage;
     }
 
     @Override
@@ -26,12 +22,12 @@ public class CommunicateServiceImp implements  CommunicateService{
 
     @Override
     public void putI10nCode(String str, Object[] objs) {
-        System.out.println(messageSource.getMessage(str, objs, quizLanguage.getLocale()));
+        consoleContext.getPrintStream().println(messageSource.getMessage(str, objs, consoleContext.getLocale()));
     }
 
     @Override
     public void putString(String str) {
-        System.out.println(str);
+        consoleContext.getPrintStream().println(str);
     }
 
     @Override
@@ -39,12 +35,24 @@ public class CommunicateServiceImp implements  CommunicateService{
         StringBuilder sb = new StringBuilder();
         for(int i=0; i<num; i++)
             sb.append("\n");
-        System.out.println(sb.toString());
+        consoleContext.getPrintStream().println(sb.toString());
+    }
+
+
+    @Override
+    public Locale getLocale() {
+        return consoleContext.getLocale();
     }
 
     @Override
     public String getObject() {
-        return scan.next();
+        return consoleContext.next();
+    }
+
+    @Override
+    public void inputLocale() {
+        consoleContext.setLocale(new Locale(getObject()));
+
     }
 
 }
