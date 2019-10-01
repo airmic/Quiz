@@ -21,14 +21,14 @@ import static java.util.Locale.*;
 public class ServiceConfigs {
     @Bean
     @Autowired
-    public CommunicateService communicateService(MessageSource messageSource, ConsoleContext consoleContext) {
-        return new CommunicateServiceImp(messageSource, consoleContext);
+    public CommunicateService communicateService(MessageSource messageSource, ConsoleContext consoleContext, QuizSettings quizSettings) {
+        return new CommunicateServiceImp(messageSource, consoleContext, quizSettings);
     }
 
     @Bean
     @Autowired
-    public AnswerDao answerDao(@Value("${question.resource}") String filename, ConsoleContext consoleContext) {
-        return new AnswerDaoCsv(filename, consoleContext);
+    public AnswerDao answerDao(QuizSettings quizSettings, ConsoleContext consoleContext) {
+        return new AnswerDaoCsv(quizSettings, consoleContext);
     }
 
     @Bean
@@ -44,4 +44,8 @@ public class ServiceConfigs {
         return new ConsoleContext(System.in, System.out);
     }
 
+    @Bean
+    public QuizSettings quizSettings() {
+        return new QuizSettings();
+    }
 }

@@ -1,6 +1,7 @@
 package ru.otus.hw.quiz.dao;
 
 import ru.otus.hw.quiz.config.ConsoleContext;
+import ru.otus.hw.quiz.config.QuizSettings;
 import ru.otus.hw.quiz.domain.Answer;
 import ru.otus.hw.quiz.domain.Question;
 
@@ -12,12 +13,12 @@ import java.util.List;
 
 public class AnswerDaoCsv implements AnswerDao {
 
-    private  final String filename;
     private List<Answer> answerList;
-    private ConsoleContext consoleContext;
+    private final ConsoleContext consoleContext;
+    private final QuizSettings quizSettings;
 
-    public AnswerDaoCsv(String filename, ConsoleContext consoleContext) {
-        this.filename = filename;
+    public AnswerDaoCsv(QuizSettings quizSettings, ConsoleContext consoleContext) {
+        this.quizSettings = quizSettings;
         this.consoleContext = consoleContext;
         answerList = new ArrayList<>();
 
@@ -36,7 +37,7 @@ public class AnswerDaoCsv implements AnswerDao {
 
         answerList.clear();
 
-        String locFilename = filename.replaceFirst("@LANG@", consoleContext.getLocale().getLanguage());
+        String locFilename = String.format(quizSettings.getFileNameTemplate(), quizSettings.getLocale().getLanguage());
         try (BufferedReader br = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(locFilename)))) {
 
             String csvLine;

@@ -2,6 +2,7 @@ package ru.otus.hw.quiz.service;
 
 import org.springframework.context.MessageSource;
 import ru.otus.hw.quiz.config.ConsoleContext;
+import ru.otus.hw.quiz.config.QuizSettings;
 
 import java.util.Locale;
 
@@ -9,10 +10,12 @@ public class CommunicateServiceImp implements  CommunicateService{
 
     private final ConsoleContext consoleContext;
     private final MessageSource messageSource;
+    private final QuizSettings quizSettings;
 
-    public CommunicateServiceImp(MessageSource messageSource, ConsoleContext consoleContext) {
+    public CommunicateServiceImp(MessageSource messageSource, ConsoleContext consoleContext, QuizSettings quizSettings) {
         this.consoleContext = consoleContext;
         this.messageSource = messageSource;
+        this.quizSettings = quizSettings;
     }
 
     @Override
@@ -22,7 +25,7 @@ public class CommunicateServiceImp implements  CommunicateService{
 
     @Override
     public void putI10nCode(String str, Object[] objs) {
-        consoleContext.getPrintStream().println(messageSource.getMessage(str, objs, consoleContext.getLocale()));
+        consoleContext.getPrintStream().println(messageSource.getMessage(str, objs, quizSettings.getLocale()));
     }
 
     @Override
@@ -40,18 +43,13 @@ public class CommunicateServiceImp implements  CommunicateService{
 
 
     @Override
-    public Locale getLocale() {
-        return consoleContext.getLocale();
-    }
-
-    @Override
     public String getObject() {
         return consoleContext.next();
     }
 
     @Override
     public void inputLocale() {
-        consoleContext.setLocale(new Locale(getObject()));
+        quizSettings.setLocale(new Locale(getObject()));
 
     }
 

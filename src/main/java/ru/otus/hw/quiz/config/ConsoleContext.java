@@ -12,12 +12,10 @@ import java.util.Scanner;
 public class ConsoleContext {
     private Scanner scanner;
     private final PrintStream printStream;
-    private Locale locale;
 
     public ConsoleContext(InputStream inputStream, PrintStream printStream) {
         this.scanner = new Scanner(inputStream);
         this.printStream = printStream;
-        this.locale = Locale.ENGLISH;
     }
 
     public String next() {
